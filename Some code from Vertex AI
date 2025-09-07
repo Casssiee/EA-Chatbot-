@@ -1,0 +1,50 @@
+from google import genai
+from google.genai import types
+import base64
+import os
+
+def generate():
+  client = genai.Client(
+      vertexai=True,
+      api_key=os.environ.get("GOOGLE_CLOUD_API_KEY"),
+  )
+
+  msg1_text1 = types.Part.from_text(text="""For fixed term and continuing professionals can you explain what are the requirement for them to be able to get a meal allowance.""")
+  msg2_text1 = types.Part.from_text(text="""A meal allowance is provided to an employee who is required to work overtime. Specifically, it is paid when an employee must continue working for more than two hours after their normal finishing time, unless the overtime ends by 6:00 pm. It is also provided when an employee works more than five hours of overtime on a Saturday, Sunday, or public holiday, or when they are required to start overtime at or before 6:00 am, which is at least one hour before their usual start time. The allowance amount is determined by the Australian Taxation Office for the relevant income year.""")
+
+  model = "gemini-2.5-flash-lite"
+  contents = [
+    types.Content(
+      role="user",
+      parts=[
+        msg1_text1
+      ]
+    ),
+    types.Content(
+      role="model",
+      parts=[
+        msg2_text1
+      ]
+    ),
+    types.Content(
+      role="user",
+      parts=[
+        types.Part.from_text(text="""Under what conditions is a meal allowance payable?""")
+      ]
+    ),
+  ]
+  tools = [
+  ]
+
+  generate_content_config = types.GenerateContentConfig(
+    tools = tools,
+  )
+
+  response = client.models.generate_content(
+    model = model,
+    contents = contents,
+    config = generate_content_config,
+  )
+  print(response.text)
+
+generate()
